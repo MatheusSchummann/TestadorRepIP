@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -23,10 +23,16 @@ namespace RelógioPontoExpress
             Console.WriteLine("Realizando a consulta dos relógios pontos...");
             for (int i = 0; i < listaFiliais.Count; i++)
             {
-                if (listaFiliais[i].Ip.Length >= 9)
+                if (listaFiliais[i].Ip.Length >= 11)
                 {
                     var ip = listaFiliais[i].Ip;
-                    var status = VerificarPing(ip) ? "Ativo" : "Inativo";
+                    int cont = 0;
+                    var status = "Inativo";
+                    while(status != "Ativo" && cont <= 3) 
+                    {
+                        status = VerificarPing(ip) ? "Ativo" : "Inativo";
+                        cont++;
+                    }
                     listaFiliais[i].Estado = status;
                 }
                 else
@@ -51,7 +57,7 @@ namespace RelógioPontoExpress
                         int comando2;
                         Console.Clear();
                         Console.WriteLine("-----------Lista Filiais-----------");
-                        Console.WriteLine("Deseja qual lista");
+                        Console.WriteLine("Deseja qual lista?");
                         Console.WriteLine("1- Lista sem filtro");
                         Console.WriteLine("2- Lista com filtro");
                         Console.WriteLine("3- Voltar");
@@ -117,15 +123,26 @@ namespace RelógioPontoExpress
 
                     case 2:
                         int confirmaNumeroFilial;
+                        string confirmarNovaFilial = "";
                         int numeroFilial;
                         string nomeFilial;
                         string ipFilial;
                         bool modemFilial = false;
-                        string modemSN = "false";
+                        string modemSN = "";
                         bool relogioFilial = false;
-                        string relogioSN = "false";
+                        string relogioSN = "";
                         Console.Clear();
                         Console.WriteLine("-----------Nova Filial-----------");
+                        while(confirmarNovaFilial != "S" && confirmarNovaFilial != "s" && confirmarNovaFilial != "N" && confirmarNovaFilial != "n") 
+                        {
+                            Console.Clear();
+                            Console.WriteLine("-----------Nova Filial-----------");
+                            Console.Write("Deseja criar uma nova filial? 'S' ou 'N': ");
+                            confirmarNovaFilial = Console.ReadLine();
+                            Console.Clear();
+                        }
+                        if (confirmarNovaFilial == "n" || confirmarNovaFilial == "N")
+                            break;
                         numeroFilial = LerNumero("Digite o numero da nova Filial: ");
                         confirmaNumeroFilial = ConfereNumeroFilialExistente(numeroFilial);
                         Console.Write("Digite o nome da nova filial: ");
@@ -267,7 +284,6 @@ namespace RelógioPontoExpress
 
                                 System.IO.File.Delete("Filiais.csv");
                                 dados.EscritaDadosFiliais(listaFiliais, "Filiais.csv");
-
                                 break;
                             }
                             else if (i + 1 == listaFiliais.Count)
@@ -289,11 +305,16 @@ namespace RelógioPontoExpress
                         Console.WriteLine("-----------Verificar IP Ativo-----------");
                         for (int i = 0; i < listaFiliais.Count; i++)
                         {
-                            if (listaFiliais[i].Ip.Length >= 9)
+                            if (listaFiliais[i].Ip.Length >= 11)
                             {
                                 var ip = listaFiliais[i].Ip;
-                                var status = VerificarPing(ip) ? "Ativo" : "Inativo";
-                                listaFiliais[i].Estado = status;
+                                int cont = 0;
+                                var status = "Inativo";
+                                while (status != "Ativo" && cont <= 3)
+                                {
+                                    status = VerificarPing(ip) ? "Ativo" : "Inativo";
+                                    cont++;
+                                }
                                 Console.WriteLine($"{listaFiliais[i].Nome} / {ip} / {status}");
                                 if (status == "Ativo") 
                                     contOn++;
@@ -367,3 +388,4 @@ namespace RelógioPontoExpress
         }
     }
 }
+
